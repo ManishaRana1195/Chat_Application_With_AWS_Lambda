@@ -1,7 +1,7 @@
 # Chat_Application_With_AWS_Lambda
 This repository contains code for our cloud computing project
 
-Websocket API endpoint: wss://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint
+Websocket API endpoint: wss://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint         
 Websocket callback URL:  https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/@connections
 
 ```
