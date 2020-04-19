@@ -12,23 +12,29 @@ access_key_id = os.environ["access_key_id"]
 secret_access_key = os.environ["secret_access_key"]
 session_token = os.environ["secret_token"]
 region = "us-east-1"
-aws_host = "wss://amyjijsyk0.execute-api.us-east-1.amazonaws.com/"
-callback_url = " https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/%40connections/"
+aws_host = "amyjijsyk0.execute-api.us-east-1.amazonaws.com"
+callback_url = "https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/%40connections/"
 
 
 def send_message_to_chatroom(user_table, chatroom, message_object):
     connections_to_chatroom = user_table.scan(FilterExpression=Key("chatroom").eq(chatroom))
 
-    aws_auth = AWSRequestsAuth(aws_access_key=access_key_id, aws_secret_access_key=secret_access_key, aws_region=region,
-                               aws_token=session_token, aws_service="execute-api",
-                               aws_host=aws_host)
+    if connections_to_chatroom["Items"] is not None and len(connections_to_chatroom["Items"]) > 0:
+        aws_auth = AWSRequestsAuth(aws_access_key=access_key_id, aws_secret_access_key=secret_access_key,
+                                   aws_region=region,
+                                   aws_token=session_token, aws_service="execute-api",
+                                   aws_host=aws_host)
 
-    for connection in connections_to_chatroom["Items"]:
-        connection_id = connection["id"]
+        for connection in connections_to_chatroom["Items"]:
+            connection_id = connection["id"]
 
-        chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
-        post_request = requests.post(chat_endpoint, auth=aws_auth, data=str(message_object))
-        print(post_request)
+            chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
+            post_request = requests.post(chat_endpoint, auth=aws_auth, data=str(message_object))
+            print(post_request)
+
+        return {"statusCode": 200, "body": "Your message was delivered successfully"}
+    else:
+        return {"statusCode": 200, "body": "No chatroom with that name exists!!"}  # create chatroom with that name
 
 
 def lambda_handler(event, context):
