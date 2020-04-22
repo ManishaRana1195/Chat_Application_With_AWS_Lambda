@@ -3,14 +3,14 @@ import React, {Component} from 'react';
 class Login extends Component {
     login=(e)=>{
         e.preventDefault()
-        this.props.setUsername(e.target.username.value)       
+        this.props.setChatroom(e.target.chatroom.value)       
     }
     render(){
   return (
     <div id="login">
         <form onSubmit={this.login}>
-            <label>Username</label><br></br>
-            <input type="text" id="username"></input><br></br>
+            <label>Chatroom</label><br></br>
+            <input type="text" id="chatroom"></input><br></br>
             <input type="submit" id="submit" value="Login"></input>
         </form>      
     </div>
