@@ -6,11 +6,8 @@ Websocket callback URL:  https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/
 
 ```
   For connect:
-  Request should contain the following:
-    { "action" :"connect", 
-    "username" : username,
-    "email_id" : email_id,
-    "chatroom" : chatroom}
+  Request should contain the following: 
+     :  api_end_point?username=my_name&email_id=my_email_id&chatroom=unicorns 
     
     Response:
     { 'statusCode': 200,
@@ -22,11 +19,15 @@ Websocket callback URL:  https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/
 ```
   For sending message:
   Request should contain the following:
-    
+    { "action" :"sendMessage", 
+     "message" : "hello how are you?",
+     "chatroom" : "chatroom_name" }
+     
   Response:
-    
+    {'message_time': 'timestamp',
+     'message': 'hello how are you doing',
+     'sender': 'Manisha'}
 ```
-
 
 ```
   For disconnecting from chat:
