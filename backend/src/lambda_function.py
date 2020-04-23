@@ -19,7 +19,7 @@ aws_host = "amyjijsyk0.execute-api.us-east-1.amazonaws.com"
 callback_url = "https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/%40connections/"
 
 
-def send_message_to_chatroom(user_table, chatroom, message_object):
+def send_message_to_chatroom(user_table, chatroom, message):
     connections_to_chatroom = user_table.scan(FilterExpression=Key("chatroom").eq(chatroom))
 
     if connections_to_chatroom["Items"] is not None and len(connections_to_chatroom["Items"]) > 0:
@@ -31,9 +31,9 @@ def send_message_to_chatroom(user_table, chatroom, message_object):
         for connection in connections_to_chatroom["Items"]:
             connection_id = connection["id"]
             chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
-            requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(message_object))
+            requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(message))
 
-        return response_object('Your message was delivered successfully')
+    return response_object('Your message was delivered successfully')
 
 
 def lambda_handler(event, context):
@@ -51,15 +51,15 @@ def lambda_handler(event, context):
         message_sender_name = sender_row["Items"][0]["user_name"]
 
         if perform_sentiment_analysis(message):
-            message = {"message_time": message_timestamp, "message": "Please express yourself in positive way.",
+            message = {"message_time": message_timestamp, "message": "Please express yourself in positive way",
                        "sender": message_sender_name, "isRejected": True}
-            return response_object(message)
-
-        message_object = {"message_time": message_timestamp, "message": message, "sender": message_sender_name,
-                          "isRejected": False}
+            return send_message_to_chatroom(user_table, chatroom, message)
 
         conversation_table.put_item(Item={"chatroomId": chatroom, "message_time": message_timestamp, "message": message,
                                           "sender": message_sender_name})
+
+        message_object = {"message_time": message_timestamp, "message": message, "sender": message_sender_name,
+                          "isRejected": False}
 
         return send_message_to_chatroom(user_table, chatroom, message_object)
     else:
