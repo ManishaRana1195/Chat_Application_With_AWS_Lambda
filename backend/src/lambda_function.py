@@ -43,22 +43,21 @@ def lambda_handler(event, context):
     data = json.loads(event['body'])
     chatroom = data['chatroom']
     message = data['message']
-
-    message_timestamp = str(datetime.now().strftime("%b %d %H:%M"))
+    message_string = str(datetime.now().strftime("%b %d %H:%M:%S"))
 
     sender_row = user_table.scan(FilterExpression=Key("id").eq(unique_connection_id))
     if sender_row["Items"] is not None and len(sender_row["Items"]) == 1:
         message_sender_name = sender_row["Items"][0]["user_name"]
 
         if perform_sentiment_analysis(message):
-            message = {"message_time": message_timestamp, "message": "Please express yourself in positive way",
+            message = {"message_time": message_string, "message": "Please express yourself in positive way",
                        "sender": message_sender_name, "isRejected": True}
             return send_message_to_chatroom(user_table, chatroom, message)
 
-        conversation_table.put_item(Item={"chatroomId": chatroom, "message_time": message_timestamp, "message": message,
+        conversation_table.put_item(Item={"chatroomId": chatroom, "message_time": message_string, "message": message,
                                           "sender": message_sender_name})
 
-        message_object = {"message_time": message_timestamp, "message": message, "sender": message_sender_name,
+        message_object = {"message_time": message_string, "message": message, "sender": message_sender_name,
                           "isRejected": False}
 
         return send_message_to_chatroom(user_table, chatroom, message_object)

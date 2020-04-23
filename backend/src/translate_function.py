@@ -41,15 +41,16 @@ def lambda_handler(event, context):
 
     # do try raise exception
     row = user_table.scan(FilterExpression=Key("id").eq(unique_connection_id))
-    conversations = conversation_table.scan(FilterExpression=Key("chatroomId").eq(row["chatroom"]))
+    conversations = conversation_table.scan(FilterExpression=Key("chatroomId").eq(row["Items"][0]["chatroom"]))
     translated_conversations = []
-    if current_language != target_language:
-        for conversation in conversations["Items"]:
-            response = translate_client.translate_text(Text='string', SourceLanguageCode=current_language,
-                                                       TargetLanguageCode=target_language)
-            translated_message = response.get('TranslatedText')
-            message_object = {"message_time": conversation["message_time"], "message": conversation["message"],
-                              "sender": conversation["sender"], "translated_message": translated_message}
-            translated_conversations.append(message_object)
+    for conversation in conversations["Items"]:
+        response = translate_client.translate_text(Text=conversation["message"],
+                                                   SourceLanguageCode=current_language,
+                                                   TargetLanguageCode=target_language)
+        translated_message = response.get('TranslatedText')
 
-    return send_message_to_user(unique_connection_id, conversations)
+        message_object = {"message_time": conversation["message_time"], "message": conversation["message"],
+                          "sender": conversation["sender"], "translated_message": translated_message}
+        translated_conversations.append(message_object)
+
+    return send_message_to_user(unique_connection_id, translated_conversations)
