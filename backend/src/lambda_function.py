@@ -31,19 +31,9 @@ def send_message_to_chatroom(user_table, chatroom, message_object):
         for connection in connections_to_chatroom["Items"]:
             connection_id = connection["id"]
             chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
-            post_request = requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(message_object))
+            requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(message_object))
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Your message was delivered successfully'),
-            'headers': {'status': 'success'}
-        }
-    else:
-        return {
-            'statusCode': 200,
-            'body': json.dumps('No chatroom with that name exists!!'),
-            'headers': {'status': 'success'}
-        }
+        return response_object('Your message was delivered successfully')
 
 
 def lambda_handler(event, context):
@@ -63,8 +53,7 @@ def lambda_handler(event, context):
         if perform_sentiment_analysis(message):
             message = {"message_time": message_timestamp, "message": "Please express yourself in positive way.",
                        "sender": message_sender_name, "isRejected": True}
-            return {'statusCode': 200, 'body': json.dumps(message),
-                    'headers': {'status': 'success'}}
+            return response_object(message)
 
         message_object = {"message_time": message_timestamp, "message": message, "sender": message_sender_name,
                           "isRejected": False}
@@ -74,15 +63,13 @@ def lambda_handler(event, context):
 
         return send_message_to_chatroom(user_table, chatroom, message_object)
     else:
-        print("Error, No such user exists with connection id {}".format(unique_connection_id))
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Invalid message sender'),
-            'headers': {'status': 'success'}
-        }
+        return response_object('Invalid message sender')
+
+
+def response_object(message):
+    return {'statusCode': 200, 'body': json.dumps(message), 'headers': {'status': 'success'}}
 
 
 def perform_sentiment_analysis(message):
-    sentiment_response = client.detect_sentiment(Text=message,
-                                                 LanguageCode="en")
+    sentiment_response = client.detect_sentiment(Text=message, LanguageCode="en")
     return sentiment_response.get("Sentiment") == "NEGATIVE"
