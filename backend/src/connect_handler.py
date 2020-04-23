@@ -9,7 +9,7 @@ def lambda_handler(event, context):
     try:
         user_name = event['queryStringParameters']['username']
         user_email = event['queryStringParameters']['email_id']
-        chatroom = event['queryStringParameters']['chatroom']  # not sure if chat room needs to be saved
+        chatroom = event['queryStringParameters']['chatroom']
 
         user_table = dynamo_client.Table("ConnectionDetails")
         user_table.put_item(Item={
