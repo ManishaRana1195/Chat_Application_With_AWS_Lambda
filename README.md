@@ -44,6 +44,20 @@ Websocket callback URL:  https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/
     
 ```
 
+For content moderation, a image needs to be uploaded by posting it on websocket endpoint.
+Step 1: pick image from view
+Step 2: encode image in base64 
+step 3: The request should look like:
+  
+    ```
+      {
+          "action": "contentModeration",
+          "file" : base64 encoded image
+      }
+    ```  
+
+
+
 
 
 #For front end
