@@ -57,10 +57,10 @@ We have created 7 lambda functions, listed as below:
 
 3. Content Moderation: If a member of the chatroom tries to post any image that contains violent and adulct content, we prvent them from posting that content in the chatroom.
 
-For content moderation, an image needs to be uploaded by posting it on websocket endpoint.
-Step 1: pick image from view
-Step 2: encode image in base64 
-step 3: The request should look like:
+For content moderation, an image needs to be uploaded by posting it on websocket endpoint.     
+ Step 1: pick image from view         
+ Step 2: encode image in base64      
+ Step 3: The request should look like:
   
 ```
     Request:
@@ -78,7 +78,35 @@ step 3: The request should look like:
     }
 ```
 
-4. 
+4. Translation function: The functionality of translating the chat messages from one current language to a target language.
+
+```
+   Request:
+    {
+       "action" : "translateMessage",
+       "current_language" : "en",
+       "target_language" : "fr",
+       "conversation" : [
+        {
+          'message_time': 'timestamp',
+          'message': 'hello how are you doing',
+          'sender': 'Manisha'
+        }
+       ]
+    }
+    
+    Response:
+    {[
+      'message_time': 'timestamp',
+      'message': 'hello how are you doing',
+      'translated_message' : "qu est qu tu fais",
+      'sender': 'Manisha'
+    ]}
+```
+   
+5. Current users: A function to provide list of connected users to the chatroom.
+6. Previous Messages: A function to load previous messages 
+
 
 
 
