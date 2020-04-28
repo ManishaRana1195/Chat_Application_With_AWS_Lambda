@@ -20,37 +20,31 @@ aws_host = "amyjijsyk0.execute-api.us-east-1.amazonaws.com"
 callback_url = "https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/%40connections/"
 
 
-def send_message_to_user(connection_id, conversations):
+def send_message_to_user(connection_id, conversation):
     aws_auth = AWSRequestsAuth(aws_access_key=access_key_id, aws_secret_access_key=secret_access_key,
                                aws_region=region,
                                aws_token=session_token, aws_service="execute-api",
                                aws_host=aws_host)
     chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
-    post_request = requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(conversations))
+    post_request = requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(conversation))
     print(str(post_request))
     return {'statusCode': 200, 'headers': {'status': 'success'}}
 
 
 def lambda_handler(event, context):
     unique_connection_id = event['requestContext']['connectionId']
-    user_table = dynamo_client.Table("ConnectionDetails")
-    conversation_table = dynamo_client.Table("Conversations")
     data = json.loads(event['body'])
-    current_language = data['current_language']  # check in valid list
+    current_language = data['current_language']
     target_language = data['target_language']
+    conversation = data['conversation']
 
     # do try raise exception
-    row = user_table.scan(FilterExpression=Key("id").eq(unique_connection_id))
-    conversations = conversation_table.scan(FilterExpression=Key("chatroomId").eq(row["Items"][0]["chatroom"]))
-    translated_conversations = []
-    for conversation in conversations["Items"]:
-        response = translate_client.translate_text(Text=conversation["message"],
-                                                   SourceLanguageCode=current_language,
-                                                   TargetLanguageCode=target_language)
-        translated_message = response.get('TranslatedText')
+    response = translate_client.translate_text(Text=conversation["message"],
+                                               SourceLanguageCode=current_language,
+                                               TargetLanguageCode=target_language)
+    translated_message = response.get('TranslatedText')
 
-        message_object = {"message_time": conversation["message_time"], "message": conversation["message"],
-                          "sender": conversation["sender"], "translated_message": translated_message}
-        translated_conversations.append(message_object)
+    message_object = {"message_time": conversation["message_time"], "message": conversation["message"],
+                      "sender": conversation["sender"], "translated_message": translated_message}
 
-    return send_message_to_user(unique_connection_id, translated_conversations)
+    return send_message_to_user(unique_connection_id, message_object)
