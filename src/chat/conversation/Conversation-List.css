@@ -1,0 +1,14 @@
+#conversation-list {
+    grid-area: conversation-list;
+    background:rgb(54, 62, 71);
+    overflow-y: scroll;
+    font-family: 'Open Sans', sans-serif;
+
+}
+
+.conversation > img {
+    grid-row: span 2;
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+  }

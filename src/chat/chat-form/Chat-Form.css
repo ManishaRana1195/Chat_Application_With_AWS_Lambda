@@ -1,0 +1,37 @@
+#chat-form {
+    background:#eee;
+  }
+  
+  /* #chat-form > img {
+    cursor: pointer;
+  } */
+  
+  #chat-form {
+    display: grid;
+    grid: 51px / 32px 1fr;
+    align-content: center;
+    align-items: center;
+    grid-gap: 15px;
+    grid-area: chat-form;
+    border-radius: 0 0 10px 0;
+    border: 1px solid rgba(0,0,0,0.25);
+    padding-left: 42px;
+    padding-right: 22px;
+  }
+  
+  #chat-form input {
+    width: 450px;
+    height: 55px;
+    outline: none;
+    padding: 15px;
+    border: 0px solid #ddd;
+    color: #330;
+    border-radius: 26px;
+    font-size: 1.4rem;
+    font-family: 'Open Sans', sans-serif;
+
+  }
+  ::placeholder {
+    color: #dbdbdb;
+    opacity: 1; /* Firefox */
+  }

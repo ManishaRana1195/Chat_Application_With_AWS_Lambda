@@ -1,0 +1,23 @@
+#search-container {
+    display: grid;
+    align-items: center;
+    grid-area: search-container;
+    background: rgb(54, 62, 71);;
+    padding: 0 20px;
+    border-radius: 10px 0 0 0;
+    box-shadow: 0 1px 3px -1px rgba(0,0,0,0.75);
+    z-index: 1;
+    font-family: 'Roboto', sans-serif;
+
+
+}
+  
+
+
+span{
+    font-size: 30px;
+}
+
+#search-container>span{
+    color: rgb(207, 209, 211);
+}
