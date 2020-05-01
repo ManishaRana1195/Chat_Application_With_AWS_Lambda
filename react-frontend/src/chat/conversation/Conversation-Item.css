@@ -1,0 +1,18 @@
+.conversation {
+    display: grid;
+    grid-template-columns: 120px 1fr max-content;
+    grid-gap: 10px;
+    color: #ddd;
+    font-size: 1.3rem;
+    padding: 20px 20px 20px 15px;
+}
+
+.title-text {
+    font-weight: bold;
+    color: rgb(207, 209, 211);
+    padding-left: 5px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
