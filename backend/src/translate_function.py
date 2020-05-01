@@ -27,7 +27,6 @@ def send_message_to_user(connection_id, conversation):
                                aws_host=aws_host)
     chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
     post_request = requests.post(chat_endpoint, auth=aws_auth, data=json.dumps(conversation))
-    print(str(post_request))
     return {'statusCode': 200, 'headers': {'status': 'success'}}
 
 

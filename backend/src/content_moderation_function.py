@@ -39,13 +39,14 @@ def send_error_message_to_user(connections, message):
 
 
 def post_image_to_chatroom(connections, file_data):
-    #files = {"file": ('filename', file_data, 'multipart/form-data')}
+    files = {"file": ('filename', file_data, 'multipart/form-data')}
 
     if connections is not None and len(connections) > 0:
         for connection in connections:
             connection_id = connection["id"]
             chat_endpoint = callback_url + connection_id.replace("=", "") + "%3D"  # encode it later
-            requests.post(chat_endpoint, auth=aws_auth, files={"dummy_image.jpeg": file_data})
+            requests.post(chat_endpoint, auth=aws_auth,
+                          files=files)
 
     return response_object('Your message was delivered successfully')
 
@@ -53,11 +54,9 @@ def post_image_to_chatroom(connections, file_data):
 def lambda_handler(event, context):
     unique_connection_id = event['requestContext']['connectionId']
     body = json.loads(event['body'])
-    filename = body['filename']
-    # image_file = body['data']
-    # data:image/jpeg;base64,
-    # image_text = image_file[image_file.find(",") + 1:]
-    # decoded_image = base64.b64decode(image_text + "===")
+    image_file = body['data']
+    image_text = image_file[image_file.find(",") + 1:]
+    decoded_image = base64.b64decode(image_text + "===")
     message_time = str(datetime.now().strftime("%b %d %H:%M:%S"))
     possible_labels = ["Explicit Nudity", "Suggestive", "Violence", "Visually Disturbing"]
     user_table = dynamo_client.Table("ConnectionDetails")
@@ -65,12 +64,7 @@ def lambda_handler(event, context):
     row = user_table.scan(FilterExpression=Key("id").eq(unique_connection_id))["Items"]
     chatroom = row[0]["chatroom"]
 
-    fileObj = s3_client.get_object(Bucket="manishanew", Key=filename)
-    file_content = fileObj["Body"].read()
-
-    response = client.detect_moderation_labels(Image={'Bytes': file_content}, MinConfidence=70)
-    # response = client.detect_moderation_labels(Image={'S3Object': {'Bucket': "manishanew", 'Name': filename}},
-    #                                           MinConfidence=70)
+    response = client.detect_moderation_labels(Image={'Bytes': decoded_image}, MinConfidence=70)
 
     needs_content_moderation = False
     for label in response['ModerationLabels']:
@@ -85,8 +79,7 @@ def lambda_handler(event, context):
 
     else:
         connections = user_table.scan(FilterExpression=Key("chatroom").eq(chatroom))
-        image_file = base64.b64encode(file_content)
-        return post_image_to_chatroom(connections['Items'], image_file)
+        return post_image_to_chatroom(connections['Items'], image_text)
 
 
 def response_object(message):
