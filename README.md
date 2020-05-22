@@ -1,9 +1,6 @@
 # Chat_Application_With_AWS_Lambda
 This repository contains code for our cloud computing project
 
-Websocket API endpoint: wss://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint         
-Websocket callback URL:  https://amyjijsyk0.execute-api.us-east-1.amazonaws.com/ChatApplicationEndpoint/@connections
-
 We have created 7 lambda functions, listed as below:
  1. Connect, Disconnect and Default: For connecting and disconnecting to a websocket endpoint and forwarding unrecognized messages to default endpoint.  
 ```
@@ -107,7 +104,8 @@ For content moderation, an image needs to be uploaded by posting it on websocket
 5. Current users: A function to provide list of connected users to the chatroom.
 6. Previous Messages: A function to load previous messages 
 
-
+## Screenshot of final version of our application
+![](https://github.com/ManishaRana1195/Chat_Application_With_AWS_Lambda/blob/master/docs/Screenshot%20from%202020-04-29%2020-28-45.png)
 
 
 #For front end
